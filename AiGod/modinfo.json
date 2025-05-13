@@ -6,7 +6,7 @@
         "CanSquared"
     ],
     "description": "A mod which uses the Gemini Ai API to simulate got in your server.\nSay 'god' in any sentence, and god will listen.\nYou can make sacrifices, and he might reward you ;)",
-    "version": "0.0.0",
+    "version": "0.0.5",
     "dependencies": {
         "game": ""
     }
