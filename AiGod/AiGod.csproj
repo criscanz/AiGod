@@ -62,9 +62,6 @@
   <None Update="assets\aigod\google_genai-1.15.0-py3-none-any.whl">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
   </None>
-  <None Update="genai_god.py">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </None>
   <None Update="google_genai-1.15.0-py3-none-any.whl">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
   </None>

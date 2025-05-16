@@ -16,6 +16,7 @@ namespace AiGod
 
     public class AiGodModSystem : ModSystem
     {
+        private int mood = 0;
         public override bool ShouldLoad(EnumAppSide side)
         {
             return side == EnumAppSide.Server;
@@ -26,7 +27,7 @@ namespace AiGod
             Mod.Logger.Notification("Hello from God on the server side: " + Lang.Get("aigod:hello"));
 
             base.StartServerSide(api);
-
+            
             api.Event.PlayerChat += Event_PlayerChat; ;
             
         }
@@ -40,21 +41,40 @@ namespace AiGod
             }
         }
         private void msg(IServerPlayer byPlayer, string message)
-        {
+        {   
+            string aiMessage = GenAiPython(message);
+            if (aiMessage.Contains(":::"))
+            {
+                commandInterpreter(byPlayer, aiMessage);
+                aiMessage = aiMessage.Substring(0,aiMessage.IndexOf(":::"));
+            }
             byPlayer.SendMessage(GlobalConstants.GeneralChatGroup,
-                           $"God: {GenAiPython(message)}",
+                           $"God: {aiMessage}",
                            EnumChatType.Notification);
             
         }
+
+        private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
+        {
+            if (aiMessage.Contains("KHBSK"))
+            {
+                byPlayer.InventoryManager.TryGiveItemstack(byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack, true);
+                // duplicates whatever is held in hand (can be very risky, so be careful)
+            }
+            else if (aiMessage.Contains("KHAAA")){mood--;}
+            else if (aiMessage.Contains("KHHHH")){mood++;}
+        }
+
         private String GenAiPython(string message)
         {
-            string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");//INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
+            /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
+            string pythonScriptPath = "genai_god.py";
             string arguments = "\""+message+"\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
-
+            string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
             ProcessStartInfo start = new ProcessStartInfo
             {
                 FileName = "python", // or "python3" python works on windows, if it doesnt, try python3 or reinstall python
-                Arguments = $"\"{pythonScriptPath}\" {arguments} {1}",
+                Arguments = $"\"{pythonScriptPath}\" {arguments} {api_key} {mood}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
