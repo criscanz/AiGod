@@ -10,8 +10,10 @@ namespace AiGod
 {
     using System.Diagnostics;
     using System.IO;
+    using System.Threading;
     using Vintagestory.API.Common;
     using Vintagestory.API.Server;
+
     public class AiGodModSystem : ModSystem
     {
         public override bool ShouldLoad(EnumAppSide side)
@@ -31,10 +33,18 @@ namespace AiGod
 
         private void Event_PlayerChat(IServerPlayer byPlayer, int channelId, ref string message, ref string data, Vintagestory.API.Datastructures.BoolRef consumed)
         {
-            //Make a new server thread with IServerApi.AddServerThread() to keep this script from making the server have atomic shit while it waits to run the python script
+            string text = message;
+            if (text.Contains("god")) {
+                Thread genThread = new Thread(() => msg(byPlayer, text));
+                genThread.Start();
+            }
+        }
+        private void msg(IServerPlayer byPlayer, string message)
+        {
             byPlayer.SendMessage(GlobalConstants.GeneralChatGroup,
-                           $"God Says: {GenAiPython(message)}",
+                           $"God: {GenAiPython(message)}",
                            EnumChatType.Notification);
+            
         }
         private String GenAiPython(string message)
         {
