@@ -17,6 +17,8 @@ namespace AiGod
     public class AiGodModSystem : ModSystem
     {
         private int mood = 0;
+
+        private ICoreServerAPI sapi;
         public override bool ShouldLoad(EnumAppSide side)
         {
             return side == EnumAppSide.Server;
@@ -28,7 +30,9 @@ namespace AiGod
 
             base.StartServerSide(api);
             
-            api.Event.PlayerChat += Event_PlayerChat; ;
+            this.sapi = api;
+
+            api.Event.PlayerChat += Event_PlayerChat;
             
         }
 
@@ -58,17 +62,20 @@ namespace AiGod
         {
             if (aiMessage.Contains("KHBSK"))
             {
-                byPlayer.InventoryManager.TryGiveItemstack(byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack, true);
+                ItemStack stack = new ItemStack();
+                stack = byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack;
+                stack.StackSize = 1;
+                sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)
             }
             else if (aiMessage.Contains("KHAAA")){mood--;}
             else if (aiMessage.Contains("KHHHH")){mood++;}
-        }
+        }//Commands to add: smite, set temporal stability to 0, 
 
         private String GenAiPython(string message)
         {
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
-            string pythonScriptPath = "genai_god.py";
+            string pythonScriptPath = "assets\\aigod\\genai_god.py";
             string arguments = "\""+message+"\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
             string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
             ProcessStartInfo start = new ProcessStartInfo
