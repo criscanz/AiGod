@@ -5,13 +5,15 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.Server;
-
+using Vintagestory.GameContent;
 namespace AiGod
 {
     using System.Diagnostics;
     using System.IO;
+    using System.Numerics;
     using System.Threading;
     using Vintagestory.API.Common;
+    using Vintagestory.API.MathTools;
     using Vintagestory.API.Server;
 
     public class AiGodModSystem : ModSystem
@@ -70,6 +72,12 @@ namespace AiGod
             }
             else if (aiMessage.Contains("KHAAA")){mood--;}
             else if (aiMessage.Contains("KHHHH")){mood++;}
+            else if (aiMessage.Contains("KHTSS")) {
+                
+            }
+            else if (aiMessage.Contains("KHPTS")) {
+
+            }
         }//Commands to add: smite, set temporal stability to 0, 
 
         private String GenAiPython(string message)
