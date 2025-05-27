@@ -21,7 +21,8 @@ def gen(prompt: str, api_key: str, mood: int):
                 "::: = start commanding (important, only use at the end of a message.) "
                 "KHBSK = Duplicates whatever the player is holding in their hand. Use this sparingly, and only for the best of sacrifcies. " 
                 "KHHHH = Make overall god mood go up by 1. Use this if the player is nice or gives a good sacrifice. " 
-                "KHAAA = Make overall god mood go down by 1. Use this if a player is being rude or wrongs you. " 
+                "KHAAA = Make overall god mood go down by 1. Use this if a player is being rude or wrongs you. "
+                "KHTSS = Spawn a thunderstorm on the player. Use this as a punishment."
             )
         ),
         contents="Current Mood: "+mood+", Player's Request: "+prompt

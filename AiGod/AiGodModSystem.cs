@@ -5,13 +5,15 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.Server;
-
+using Vintagestory.GameContent;
 namespace AiGod
 {
     using System.Diagnostics;
     using System.IO;
+    using System.Numerics;
     using System.Threading;
     using Vintagestory.API.Common;
+    using Vintagestory.API.MathTools;
     using Vintagestory.API.Server;
     using Vintagestory.Common;
 
@@ -70,23 +72,15 @@ namespace AiGod
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("KHAAA")) {
-                byte[] plrMoodByte = byPlayer.WorldData.GetModdata("mood");
-                int plrMood = plrMoodByte != null ? BitConverter.ToInt32(plrMoodByte, 0) : 0;
-                byte[] data = BitConverter.GetBytes(plrMood - 1);
-                byPlayer.WorldData.SetModdata("mood", data);
-            }
-            else if (aiMessage.Contains("KHHHH")) {
-                byte[] plrMoodByte = byPlayer.WorldData.GetModdata("mood");
-                int plrMood = plrMoodByte != null ? BitConverter.ToInt32(plrMoodByte, 0) : 0;
-                byte[] data = BitConverter.GetBytes(plrMood + 1);
-                byPlayer.WorldData.SetModdata("mood", data);
-            }
-            else if (aiMessage.Contains("KHTTT"))
-            {
+            else if (aiMessage.Contains("KHAAA")){mood--;}
+            else if (aiMessage.Contains("KHHHH")){mood++;}
+            else if (aiMessage.Contains("KHTSS")) {
                 
             }
-        }
+            else if (aiMessage.Contains("KHPTS")) {
+
+            }
+        }//Commands to add: smite, set temporal stability to 0, 
 
         private String GenAiPython(string message,int mood)
         {
