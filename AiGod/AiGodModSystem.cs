@@ -13,10 +13,10 @@ namespace AiGod
     using System.Threading;
     using Vintagestory.API.Common;
     using Vintagestory.API.Server;
+    using Vintagestory.Common;
 
     public class AiGodModSystem : ModSystem
     {
-        private int mood = 0;
 
         private ICoreServerAPI sapi;
         public override bool ShouldLoad(EnumAppSide side)
@@ -46,7 +46,9 @@ namespace AiGod
         }
         private void msg(IServerPlayer byPlayer, string message)
         {   
-            string aiMessage = GenAiPython(message);
+            byte[] playerMoodByte = byPlayer.WorldData.GetModdata("mood");
+            int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
+            string aiMessage = GenAiPython(message, 0);
             if (aiMessage.Contains(":::"))
             {
                 commandInterpreter(byPlayer, aiMessage);
@@ -63,16 +65,30 @@ namespace AiGod
             if (aiMessage.Contains("KHBSK"))
             {
                 ItemStack stack = new ItemStack();
-                stack = byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack;
+                stack.SetFrom(byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack);
                 stack.StackSize = 1;
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
-                // duplicates whatever is held in hand (can be very risky, so be careful)
+                // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("KHAAA")){mood--;}
-            else if (aiMessage.Contains("KHHHH")){mood++;}
-        }//Commands to add: smite, set temporal stability to 0, 
+            else if (aiMessage.Contains("KHAAA")) {
+                byte[] plrMoodByte = byPlayer.WorldData.GetModdata("mood");
+                int plrMood = plrMoodByte != null ? BitConverter.ToInt32(plrMoodByte, 0) : 0;
+                byte[] data = BitConverter.GetBytes(plrMood - 1);
+                byPlayer.WorldData.SetModdata("mood", data);
+            }
+            else if (aiMessage.Contains("KHHHH")) {
+                byte[] plrMoodByte = byPlayer.WorldData.GetModdata("mood");
+                int plrMood = plrMoodByte != null ? BitConverter.ToInt32(plrMoodByte, 0) : 0;
+                byte[] data = BitConverter.GetBytes(plrMood + 1);
+                byPlayer.WorldData.SetModdata("mood", data);
+            }
+            else if (aiMessage.Contains("KHTTT"))
+            {
+                
+            }
+        }
 
-        private String GenAiPython(string message)
+        private String GenAiPython(string message,int mood)
         {
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
             string pythonScriptPath = "assets\\aigod\\genai_god.py";
