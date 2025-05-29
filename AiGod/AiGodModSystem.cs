@@ -50,7 +50,7 @@ namespace AiGod
         {   
             byte[] playerMoodByte = byPlayer.WorldData.GetModdata("mood");
             int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-            string aiMessage = GenAiPython(message, 0);
+            string aiMessage = GenAiPython(message, playerMood);
             if (aiMessage.Contains(":::"))
             {
                 commandInterpreter(byPlayer, aiMessage);
@@ -72,8 +72,18 @@ namespace AiGod
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("KHAAA")){mood--;}
-            else if (aiMessage.Contains("KHHHH")){mood++;}
+            else if (aiMessage.Contains("KHAAA")){byte[] playerMoodByte = byPlayer.GetModdata("mood");
+                int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
+                playerMood--;
+                byte[] moodBytes = BitConverter.GetBytes(playerMood);
+                byPlayer.SetModdata("mood", moodBytes);
+            }
+            else if (aiMessage.Contains("KHHHH")){ byte[] playerMoodByte = byPlayer.GetModdata("mood");
+                int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
+                playerMood++;
+                byte[] moodBytes = BitConverter.GetBytes(playerMood);
+                byPlayer.SetModdata("mood", moodBytes);
+            }
             else if (aiMessage.Contains("KHTSS")) {
                 
             }
