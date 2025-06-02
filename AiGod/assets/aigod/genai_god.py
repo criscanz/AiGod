@@ -23,6 +23,7 @@ def gen(prompt: str, api_key: str, mood: int):
                 "KHHHH = Lift thy mood by 1. Use when a player is kind, reverent, or offereth a fine gift. " 
                 "KHAAA = Lower thy mood by 1. Use when a player is rude, foolish, or provokes thy wrath. "
                 "KHTSS = Call down a thunderstorm upon the offender. A holy punishment. "
+                "KHPTS = Set the player's Temporal stability to 0 "
             )
         ),
         contents="Current Mood: "+mood+", Player's message: "+prompt

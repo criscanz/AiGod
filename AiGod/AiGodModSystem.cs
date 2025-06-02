@@ -12,7 +12,9 @@ namespace AiGod
     using System.IO;
     using System.Numerics;
     using System.Threading;
+    using System.Threading.Tasks;
     using Vintagestory.API.Common;
+    using Vintagestory.API.Datastructures;
     using Vintagestory.API.MathTools;
     using Vintagestory.API.Server;
     using Vintagestory.Common;
@@ -72,24 +74,41 @@ namespace AiGod
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("KHAAA")){byte[] playerMoodByte = byPlayer.GetModdata("mood");
+            else if (aiMessage.Contains("KHAAA")){byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
                 playerMood--;
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("KHHHH")){ byte[] playerMoodByte = byPlayer.GetModdata("mood");
+            else if (aiMessage.Contains("KHHHH")){ byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood up by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
                 playerMood++;
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
             else if (aiMessage.Contains("KHTSS")) {
-                
+                //replace this with a thunderstorm ability
             }
-            else if (aiMessage.Contains("KHPTS")) {
+            else if (aiMessage.Contains("KHPTS")) {//sets temporal stability to 0, preferably in the future, set player's temporal
+                double value = 0.0;
+                ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
+            }
+            else if (aiMessage.Contains("KHTSD")) {//sets time to morning (skips ahead in time, never goes backward)(wait, how do you spell backward)
+                while (sapi.World.Calendar.FullHourOfDay < 5)
+                {
+                    sapi.World.Calendar.CalendarSpeedMul = 1000.0f;
+                }
+                sapi.World.Calendar.CalendarSpeedMul = 0.5f;
+            }
+            else if (aiMessage.Contains("KHTSN")) {//sets time to night, works the same as setting the time to day.
+                while (sapi.World.Calendar.FullHourOfDay < 19)
+                {
+                    sapi.World.Calendar.CalendarSpeedMul = 1000.0f;
+                }
+                sapi.World.Calendar.CalendarSpeedMul = 0.5f;
+            }
 
-            }
+            
         }//Commands to add: smite, set temporal stability to 0, 
 
         private String GenAiPython(string message,int mood)
