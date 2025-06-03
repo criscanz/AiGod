@@ -1,5 +1,5 @@
-INPORTANT - TO GET WORKING, ATLEAST OF VERSION 0.1.0 AND BELOW, YOU MUST INSTALL genai_god.py INTO YOUR appdata\\roaming\\vintagestory FOLDER (YES, THE ONE WITH THE EXE) 
-AND!!!!! YOU NEED TO INSTALL THE GEMINI API FROM https://pypi.org/project/google-genai/#files AND ALSO PUT IT INTO appdata\\roaming\\vintagestory
+INPORTANT - TO GET WORKING, ATLEAST OF VERSION 0.1.0 AND BELOW, YOU MUST INSTALL genai_god.py INTO A NEW FOLDER IN ASSETS CALLED aiGod AND PUT IT IN THERE
+AND!!!!! YOU NEED TO INSTALL THE GEMINI API FROM https://pypi.org/project/google-genai/#files AND ALSO PUT IT INTO appdata\\roaming\\vintagestory\\assets\\aiGod
 (I will fix this later)
 
 anything gemini says can not be used against me or my mod
