@@ -11,6 +11,7 @@ namespace AiGod
     using System.Diagnostics;
     using System.IO;
     using System.Numerics;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
     using Vintagestory.API.Common;
@@ -64,7 +65,7 @@ namespace AiGod
             
         }
 
-        private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
+        private async void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
             if (aiMessage.Contains("KHBSK"))
             {
@@ -93,24 +94,18 @@ namespace AiGod
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
-            else if (aiMessage.Contains("KHTSD")) {//sets time to morning (skips ahead in time, never goes backward)(wait, how do you spell backward)
-                while (sapi.World.Calendar.FullHourOfDay < 5)
-                {
-                    sapi.World.Calendar.CalendarSpeedMul = 1000.0f;
-                }
-                sapi.World.Calendar.CalendarSpeedMul = 0.5f;
+            else if (aiMessage.Contains("KHTSD")) {//sets time to morning (skips ahead in time, never goes backward)(wait, how do you spell backward) - NVM scrapped, vintage story time is too complicated
+                sapi.InjectConsole("/announce setting time is too hard");
             }
-            else if (aiMessage.Contains("KHTSN")) {//sets time to night, works the same as setting the time to day.
-                while (sapi.World.Calendar.FullHourOfDay < 19)
-                {
-                    sapi.World.Calendar.CalendarSpeedMul = 1000.0f;
-                }
-                sapi.World.Calendar.CalendarSpeedMul = 0.5f;
+            else if (aiMessage.Contains("KHTSN")) {//sets time to night, works the same as setting the time to day. - NVM scrapped, Vintage sttory time is too complicated
+                sapi.InjectConsole("/announce setting time is too hard");
+            }
+            else if (aiMessage.Contains("CHECK")){//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
+                byPlayer.InventoryManager.GetHotbarInventory();
             }
 
             
-        }//Commands to add: smite, set temporal stability to 0, 
-
+        }//Commands to add: smite, 
         private String GenAiPython(string message,int mood)
         {
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
