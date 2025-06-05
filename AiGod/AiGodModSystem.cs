@@ -65,7 +65,7 @@ namespace AiGod
             
         }
 
-        private async void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
+        private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
             if (aiMessage.Contains("KHBSK"))
             {
@@ -101,10 +101,11 @@ namespace AiGod
                 sapi.InjectConsole("/announce setting time is too hard");
             }
             else if (aiMessage.Contains("CHECK")){//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
-                IInventory inventory = byPlayer.InventoryManager.GetInventory(byPlayer.InventoryManager.GetInventoryName(GlobalConstants.characterInvClassName));
-                foreach (var item in inventory)
+                IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
+                foreach (var item in hotbar)
                 {
-                    if (item.GetStackName() != null)
+                    Console.WriteLine("Skibidi toilet gyatt ohio");
+                    if (!item.Empty)
                     {
                         Console.WriteLine(item.GetStackName());
                     }
