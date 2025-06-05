@@ -101,9 +101,16 @@ namespace AiGod
                 sapi.InjectConsole("/announce setting time is too hard");
             }
             else if (aiMessage.Contains("CHECK")){//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
-                byPlayer.InventoryManager.GetHotbarInventory();
+                IInventory inventory = byPlayer.InventoryManager.GetInventory(byPlayer.InventoryManager.GetInventoryName(GlobalConstants.characterInvClassName));
+                foreach (var item in inventory)
+                {
+                    if (item.GetStackName() != null)
+                    {
+                        Console.WriteLine(item.GetStackName());
+                    }
+                }
             }
-
+            
         }//Commands to add: smite, 
         private String GenAiPython(string message,int mood)
         {
@@ -132,7 +139,7 @@ namespace AiGod
                 if (!string.IsNullOrEmpty(error))
                 {
                     Console.WriteLine("Error: " + error);
-                    return output + error;
+                    return error;
                 }
                 else
                 {
