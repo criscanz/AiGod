@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 import sys
 
-def gen(prompt: str, api_key: str, mood: int):
+def gen(prompt: str, api_key: str, mood: int, sacrifices: str):
     client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(
@@ -19,23 +19,24 @@ def gen(prompt: str, api_key: str, mood: int):
                 "Example: (A message to the player) ::: KHBSK - this would execute the duplication of the item the player holdeth. "
                 "List of commands: "
                 "::: = Begins a string of divine commands (must be placed at the end of thy message to the player, before thy commands thou wish to execute). "
-                "KHBSK = Duplicate what the player holdeth in hand. Use with great restraint, and only when a sacrifice is truly worthy. " 
-                "KHHHH = Lift thy mood by 1. Use when a player is kind, reverent, or offereth a fine gift. " 
-                "KHAAA = Lower thy mood by 1. Use when a player is rude, foolish, or provokes thy wrath. "
-                "KHTSS = Call down a thunderstorm upon the offender. A holy punishment. "
-                "KHPTS = Set the player's Temporal stability to 0 "
-                "CHECK = Checks the player's inventory for a sacrifice "
+                "__BSK = Duplicate what the player holdeth in hand. Use with great restraint, and only when a sacrifice is truly worthy. " 
+                "__HHH = Lift thy mood by 1. Use when a player is kind, reverent, or offereth a fine gift. " 
+                "__AAA = Lower thy mood by 1. Use when a player is rude, foolish, or provokes thy wrath. "
+                "__TSS = Call down a thunderstorm upon the offender. A holy punishment. "
+                "__PTS = Set the player's Temporal stability to 0 "
+                "__TIS = Checks the player's inventory for a sacrifice "
             )
         ),
-        contents="Current Mood: "+mood+", Player's message: "+prompt
+        contents="Current Mood: "+mood+", Potential Sacrifices in player inventory:"+sacrifices+" Player's message: "+prompt
     )
 
     return response.candidates[0].content.parts[0].text
 
-if len(sys.argv) >= 3:
+if len(sys.argv) >= 4:
     prompt_input = sys.argv[1]
     api_key_input = sys.argv[2]
     mood_input = sys.argv[3]
-    print(gen(prompt_input, api_key_input, mood_input))
+    sacrifices_input = sys.argv[4]
+    print(gen(prompt_input, api_key_input, mood_input, sacrifices_input))
 else:
-    print("Error: Missing prompt, API key or mood. Usage: script.py '<prompt>' '<api_key>' '<mood>'")
+    print("Error: Missing prompt, API key or mood. Usage: script.py '<prompt>' '<api_key>' '<mood>' '<sacrifices>'")

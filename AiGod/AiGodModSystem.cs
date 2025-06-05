@@ -1,24 +1,12 @@
-﻿using System.Diagnostics;
-using System;
-using Vintagestory.API.Client;
-using Vintagestory.API.Common;
+﻿using System;
 using Vintagestory.API.Config;
-using Vintagestory.API.Server;
-using Vintagestory.Server;
-using Vintagestory.GameContent;
 namespace AiGod
 {
     using System.Diagnostics;
-    using System.IO;
-    using System.Numerics;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
-    using System.Threading.Tasks;
     using Vintagestory.API.Common;
     using Vintagestory.API.Datastructures;
-    using Vintagestory.API.MathTools;
     using Vintagestory.API.Server;
-    using Vintagestory.Common;
 
     public class AiGodModSystem : ModSystem
     {
@@ -34,40 +22,41 @@ namespace AiGod
             Mod.Logger.Notification("Hello from God on the server side: " + Lang.Get("aigod:hello"));
 
             base.StartServerSide(api);
-            
+
             this.sapi = api;
 
             api.Event.PlayerChat += Event_PlayerChat;
-            
+
         }
 
         private void Event_PlayerChat(IServerPlayer byPlayer, int channelId, ref string message, ref string data, Vintagestory.API.Datastructures.BoolRef consumed)
         {
             string text = message;
-            if (text.Contains("god")) {
+            if (text.Contains("god"))
+            {
                 Thread genThread = new Thread(() => msg(byPlayer, text));
                 genThread.Start();
             }
         }
         private void msg(IServerPlayer byPlayer, string message)
-        {   
+        {
             byte[] playerMoodByte = byPlayer.WorldData.GetModdata("mood");
             int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-            string aiMessage = GenAiPython(message, playerMood);
+            string aiMessage = GenAiPython(message, playerMood, SacrificeCheck(byPlayer));//need to add sacrifice check ,SacrificeCheck(byPlayer) after playerMood
             if (aiMessage.Contains(":::"))
             {
                 commandInterpreter(byPlayer, aiMessage);
-                aiMessage = aiMessage.Substring(0,aiMessage.IndexOf(":::"));
+                aiMessage = aiMessage.Substring(0, aiMessage.IndexOf(":::"));
             }
             byPlayer.SendMessage(GlobalConstants.GeneralChatGroup,
                            $"God: {aiMessage}",
                            EnumChatType.Notification);
-            
+
         }
 
         private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
-            if (aiMessage.Contains("KHBSK"))
+            if (aiMessage.Contains("__BSK"))
             {
                 ItemStack stack = new ItemStack();
                 stack.SetFrom(byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack);
@@ -75,54 +64,77 @@ namespace AiGod
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("KHAAA")){byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
+            else if (aiMessage.Contains("__AAA"))
+            {
+                byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
                 playerMood--;
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("KHHHH")){ byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood up by one
+            else if (aiMessage.Contains("__HHH"))
+            {
+                byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood up by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
                 playerMood++;
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("KHTSS")) {
+            else if (aiMessage.Contains("__TSS"))
+            {
                 //replace this with a thunderstorm ability
             }
-            else if (aiMessage.Contains("KHPTS")) {//sets temporal stability to 0, preferably in the future, set player's temporal
+            else if (aiMessage.Contains("__PTS"))
+            {//sets temporal stability to 0, preferably in the future, set player's temporal
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
-            else if (aiMessage.Contains("KHTSD")) {//sets time to morning (skips ahead in time, never goes backward)(wait, how do you spell backward) - NVM scrapped, vintage story time is too complicated
-                sapi.InjectConsole("/announce setting time is too hard");
-            }
-            else if (aiMessage.Contains("KHTSN")) {//sets time to night, works the same as setting the time to day. - NVM scrapped, Vintage sttory time is too complicated
-                sapi.InjectConsole("/announce setting time is too hard");
-            }
-            else if (aiMessage.Contains("CHECK")){//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
+            else if (aiMessage.Contains("__TIS"))
+            {//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
                 IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
                 foreach (var item in hotbar)
                 {
-                    Console.WriteLine("Skibidi toilet gyatt ohio");
                     if (!item.Empty)
                     {
-                        Console.WriteLine(item.GetStackName());
+                        Console.WriteLine(item.GetStackName());//take the first item in inventory and remove it, this is a sacrifice
                     }
                 }
             }
+
+
+        }//Commands to add: smite,
+
+        private static String SacrificeCheck(IServerPlayer byPlayer)
+        {
+            String potentialSacrifices = "";
+            IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
+            foreach (var item in hotbar)
+            {
+                if (!item.Empty)
+                {
+                    potentialSacrifices = potentialSacrifices + item.Itemstack.StackSize + "*" + item.GetStackName() + ", ";
+                }
+            }
+            if (potentialSacrifices.Length == 1)
+            {
+                potentialSacrifices = "No sacrifices found in hotbar";
+            }
             
-        }//Commands to add: smite, 
-        private String GenAiPython(string message,int mood)
+                Console.WriteLine(potentialSacrifices);
+
+            return potentialSacrifices;
+        }
+        private static String GenAiPython(string message, int mood, String sacrifices)
         {
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
             string pythonScriptPath = "assets\\aigod\\genai_god.py";
-            string arguments = "\""+message+"\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
+            string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
             string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
+            string sacrifices2 = "\""+sacrifices+"\"";
             ProcessStartInfo start = new ProcessStartInfo
             {
                 FileName = "python", // or "python3" python works on windows, if it doesnt, try python3 or reinstall python
-                Arguments = $"\"{pythonScriptPath}\" {arguments} {api_key} {mood}",
+                Arguments = $"\"{pythonScriptPath}\" {arguments} {api_key} {mood} {sacrifices2}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -136,7 +148,7 @@ namespace AiGod
 
                 process.WaitForExit();
 
-                
+
                 if (!string.IsNullOrEmpty(error))
                 {
                     Console.WriteLine("Error: " + error);
