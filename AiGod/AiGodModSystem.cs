@@ -104,7 +104,6 @@ namespace AiGod
                 byPlayer.InventoryManager.GetHotbarInventory();
             }
 
-            
         }//Commands to add: smite, 
         private String GenAiPython(string message,int mood)
         {
