@@ -3,6 +3,7 @@ using Vintagestory.API.Config;
 namespace AiGod
 {
     using System.Diagnostics;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using Vintagestory.API.Common;
     using Vintagestory.API.Datastructures;
@@ -45,7 +46,7 @@ namespace AiGod
             string aiMessage = GenAiPython(message, playerMood, SacrificeCheck(byPlayer));//need to add sacrifice check ,SacrificeCheck(byPlayer) after playerMood
             if (aiMessage.Contains(":::"))
             {
-                commandInterpreter(byPlayer, aiMessage);
+                commandInterpreter(byPlayer, aiMessage.Substring(aiMessage.IndexOf(":::")));
                 aiMessage = aiMessage.Substring(0, aiMessage.IndexOf(":::"));
             }
             byPlayer.SendMessage(GlobalConstants.GeneralChatGroup,
@@ -56,7 +57,8 @@ namespace AiGod
 
         private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
-            if (aiMessage.Contains("__BSK"))
+            Console.WriteLine("Command Interpreter called with message: " + aiMessage);
+            if (aiMessage.Contains("CBSK"))
             {
                 ItemStack stack = new ItemStack();
                 stack.SetFrom(byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack);
@@ -64,7 +66,7 @@ namespace AiGod
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("__AAA"))
+            else if (aiMessage.Contains("CAAA"))
             {
                 byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
@@ -72,7 +74,7 @@ namespace AiGod
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("__HHH"))
+            else if (aiMessage.Contains("CHHH"))
             {
                 byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood up by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
@@ -80,28 +82,60 @@ namespace AiGod
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("__TSS"))
+            else if (aiMessage.Contains("CTSS"))
             {
                 //replace this with a thunderstorm ability
             }
-            else if (aiMessage.Contains("__PTS"))
+            else if (aiMessage.Contains("CPTS"))
             {//sets temporal stability to 0, preferably in the future, set player's temporal
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
-            else if (aiMessage.Contains("__TIS"))
+            else if (aiMessage.Contains("CTIS"))
             {//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
                 IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
+                bool tookItem = false;
+                Console.WriteLine("INITIATING TAKE COMMAND");//THIS DOESNT WORK AND IM CRASHING OUT!!1!1!1!! (GOD LITTERALLY PUTS IT INTO THE COMMAND INTERPRETER, BUT THE .Contains JUST IGNORES IT WHAT THE FUCK >:(
+
+                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS[{"), aiMessage.IndexOf("}]CTIS"));
+                Console.WriteLine(GrabCommand);
                 foreach (var item in hotbar)
                 {
-                    if (!item.Empty)
+                    if (!item.Empty && GrabCommand.Contains(item.GetStackName()))
                     {
-                        Console.WriteLine(item.GetStackName());//take the first item in inventory and remove it, this is a sacrifice
+
+                        string amountToTake = Regex.Match(GrabCommand, @"\d+").Value;
+                        int amountToTakeInt = Int32.Parse(amountToTake);
+                        int stackSize = item.Itemstack.StackSize;
+                        if (stackSize > amountToTakeInt)
+                        {
+                            Console.WriteLine("Taking " + item.GetStackName() + " and taking " + amountToTakeInt + " amount");
+                            item.Itemstack.StackSize = stackSize - amountToTakeInt;
+                            item.MarkDirty();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Removing item from hotbar: " + item.GetStackName());
+                            item.Itemstack = null;
+                            item.MarkDirty();
+                        }
+                        byte[] playerMoodByte = byPlayer.GetModdata("mood");
+                        int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
+                        playerMood += 2;
+                        byte[] moodBytes = BitConverter.GetBytes(playerMood);
+                        byPlayer.SetModdata("mood", moodBytes);
                     }
                 }
+                if(tookItem == false)
+                {
+                    Console.WriteLine("No item found!");
+                    byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
+                    int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
+                    playerMood -= 5;
+                    byte[] moodBytes = BitConverter.GetBytes(playerMood);
+                    byPlayer.SetModdata("mood", moodBytes);
+                }
             }
-
-
         }//Commands to add: smite,
 
         private static String SacrificeCheck(IServerPlayer byPlayer)
@@ -119,8 +153,8 @@ namespace AiGod
             {
                 potentialSacrifices = "No sacrifices found in hotbar";
             }
-            
-                Console.WriteLine(potentialSacrifices);
+
+            Console.WriteLine(potentialSacrifices);
 
             return potentialSacrifices;
         }
@@ -130,7 +164,7 @@ namespace AiGod
             string pythonScriptPath = "assets\\aigod\\genai_god.py";
             string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
             string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
-            string sacrifices2 = "\""+sacrifices+"\"";
+            string sacrifices2 = "\"" + sacrifices + "\"";
             ProcessStartInfo start = new ProcessStartInfo
             {
                 FileName = "python", // or "python3" python works on windows, if it doesnt, try python3 or reinstall python
