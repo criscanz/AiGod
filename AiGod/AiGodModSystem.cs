@@ -57,7 +57,7 @@ namespace AiGod
 
         private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
-            Console.WriteLine("Command Interpreter called with message: " + aiMessage);
+            Console.WriteLine("Command Interpreter called with message: " + aiMessage);//Im switching this entire system to be a switch statement. It will hopefully work instead.
             if (aiMessage.Contains("CBSK"))
             {
                 ItemStack stack = new ItemStack();
@@ -88,16 +88,18 @@ namespace AiGod
             }
             else if (aiMessage.Contains("CPTS"))
             {//sets temporal stability to 0, preferably in the future, set player's temporal
+                Console.WriteLine("INITIATING Temporal COMMAND");
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
-            else if (aiMessage.Contains("CTIS"))
+            else if (aiMessage.Contains("CTIS"))//I see the problem, else if just stops past this point.
             {//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
+                Console.WriteLine("INITIATING TAKE COMMAND");
                 IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
                 bool tookItem = false;
                 Console.WriteLine("INITIATING TAKE COMMAND");//THIS DOESNT WORK AND IM CRASHING OUT!!1!1!1!! (GOD LITTERALLY PUTS IT INTO THE COMMAND INTERPRETER, BUT THE .Contains JUST IGNORES IT WHAT THE FUCK >:(
 
-                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS[{"), aiMessage.IndexOf("}]CTIS"));
+                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTISS"), aiMessage.IndexOf("CTISE"));
                 Console.WriteLine(GrabCommand);
                 foreach (var item in hotbar)
                 {
@@ -126,7 +128,7 @@ namespace AiGod
                         byPlayer.SetModdata("mood", moodBytes);
                     }
                 }
-                if(tookItem == false)
+                if (tookItem == false)
                 {
                     Console.WriteLine("No item found!");
                     byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
@@ -135,6 +137,9 @@ namespace AiGod
                     byte[] moodBytes = BitConverter.GetBytes(playerMood);
                     byPlayer.SetModdata("mood", moodBytes);
                 }
+            }
+            else if (aiMessage.Contains("sigma")){
+                Console.WriteLine("I love knocking out teeth");
             }
         }//Commands to add: smite,
 

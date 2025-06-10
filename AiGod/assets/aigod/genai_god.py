@@ -24,7 +24,7 @@ def gen(prompt: str, api_key: str, mood: int, sacrifices: str):
                 "CAAA = Lower thy mood by 1. Use when a player is rude, foolish, or provokes thy wrath. "
                 "CTSS = Call down a thunderstorm upon the offender. A holy punishment. "
                 "CPTS = Set the player's Temporal stability to 0 "
-                "CTIS = Takes the specified item from the players inevntory as a sacrifice item. specify the item by typing it like this: CTIS[{number,itemName}]CTIS If your mood is high enough towards the player, feel free to use this command along with a beneficial command to reward the player. "
+                "CTIS = Takes the specified item from the players inevntory as a sacrifice item. specify the item by typing it like this: CTISS number,itemName CTISE (The extra S and E stand for start and end of the command) If your mood is high enough towards the player, feel free to use this command along with a beneficial command to reward the player. "
             )
         ),
         contents="Current Mood Towards Player: "+mood+", Potential Sacrifices in player inventory:"+sacrifices+" Player's message: "+prompt
