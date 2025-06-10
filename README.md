@@ -19,4 +19,4 @@ if you get struck by lightning 20 times i am not responsible, you did it to your
 
 and NO, you can not just steal files or large parts of this mod, but if you want to use it as refrence or a learning tool, feel free, just dont be a jackass and steal the whole thing without credit, thanks
 
-Created by CanSquared, V0.1.0 5/14/2025
+Created by CanSquared, V0.7.0, created on 5/14/2025
