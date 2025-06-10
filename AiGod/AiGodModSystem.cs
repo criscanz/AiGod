@@ -58,6 +58,7 @@ namespace AiGod
         private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
             Console.WriteLine("Command Interpreter called with message: " + aiMessage);//Im switching this entire system to be a switch statement. It will hopefully work instead.
+            
             if (aiMessage.Contains("CBSK"))
             {
                 ItemStack stack = new ItemStack();
@@ -66,7 +67,7 @@ namespace AiGod
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
                 // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            else if (aiMessage.Contains("CAAA"))
+            if (aiMessage.Contains("CAAA"))
             {
                 byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
@@ -74,7 +75,7 @@ namespace AiGod
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("CHHH"))
+            if (aiMessage.Contains("CHHH"))
             {
                 byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood up by one
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
@@ -82,24 +83,21 @@ namespace AiGod
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            else if (aiMessage.Contains("CTSS"))
+            if (aiMessage.Contains("CTSS"))
             {
                 //replace this with a thunderstorm ability
             }
-            else if (aiMessage.Contains("CPTS"))
+            if (aiMessage.Contains("CPTS"))
             {//sets temporal stability to 0, preferably in the future, set player's temporal
-                Console.WriteLine("INITIATING Temporal COMMAND");
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
-            else if (aiMessage.Contains("CTIS"))//I see the problem, else if just stops past this point.
+            if (aiMessage.Contains("CTIS[")&& aiMessage.Contains("]CTIS"))//I see the problem, else if just stops past this point.
             {//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
-                Console.WriteLine("INITIATING TAKE COMMAND");
                 IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
                 bool tookItem = false;
-                Console.WriteLine("INITIATING TAKE COMMAND");//THIS DOESNT WORK AND IM CRASHING OUT!!1!1!1!! (GOD LITTERALLY PUTS IT INTO THE COMMAND INTERPRETER, BUT THE .Contains JUST IGNORES IT WHAT THE FUCK >:(
 
-                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTISS"), aiMessage.IndexOf("CTISE"));
+                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS["), aiMessage.IndexOf("]CTIS"));
                 Console.WriteLine(GrabCommand);
                 foreach (var item in hotbar)
                 {
@@ -114,12 +112,14 @@ namespace AiGod
                             Console.WriteLine("Taking " + item.GetStackName() + " and taking " + amountToTakeInt + " amount");
                             item.Itemstack.StackSize = stackSize - amountToTakeInt;
                             item.MarkDirty();
+                            tookItem = true;
                         }
                         else
                         {
                             Console.WriteLine("Removing item from hotbar: " + item.GetStackName());
                             item.Itemstack = null;
                             item.MarkDirty();
+                            tookItem = true;
                         }
                         byte[] playerMoodByte = byPlayer.GetModdata("mood");
                         int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
@@ -137,9 +137,6 @@ namespace AiGod
                     byte[] moodBytes = BitConverter.GetBytes(playerMood);
                     byPlayer.SetModdata("mood", moodBytes);
                 }
-            }
-            else if (aiMessage.Contains("sigma")){
-                Console.WriteLine("I love knocking out teeth");
             }
         }//Commands to add: smite,
 
