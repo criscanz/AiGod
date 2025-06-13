@@ -20,11 +20,10 @@ def gen(prompt: str, api_key: str, mood: int, sacrifices: str):
                 "List of commands: "
                 "::: = Begins a string of divine commands (must be placed at the end of thy message to the player, before thy commands thou wish to execute). "
                 "CBSK = Duplicate what the player holdeth in hand. Use with great restraint, and only when a sacrifice is truly worthy. " 
-                "CHHH = Lift thy mood by 1. Use when a player is kind, reverent, or offereth a fine gift. " 
-                "CAAA = Lower thy mood by 1. Use when a player is rude, foolish, or provokes thy wrath. "
+                "CMMM = Changes Mood by a specified value. Use it like this: CMMM[1] (This would make the mood go up by one.) You can use negative numbers to make mood go down too. " 
                 "CTSS = Call down a thunderstorm upon the offender. A holy punishment. "
                 "CPTS = Set the player's Temporal stability to 0 "
-                "CTIS = Takes the specified item from the players inevntory as a sacrifice item. specify the item by typing it like this: CTIS[number,itemName]CTIS (copy the exact item name given to you for the itemName value)If your mood is high enough towards the player, feel free to use this command along with a beneficial command to reward the player. "
+                "CTIS = Takes the specified item from the players inevntory as a sacrifice item. specify the item by typing it like this: CTIS[number,itemName] (copy the exact item name given to you for the itemName value) If your mood is high enough towards the player, feel free to use this command along with a beneficial command to reward the player. "
             )
         ),
         contents="Current Mood Towards Player: "+mood+", Potential Sacrifices in player inventory:"+sacrifices+" Player's message: "+prompt

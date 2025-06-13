@@ -33,7 +33,7 @@ namespace AiGod
         private void Event_PlayerChat(IServerPlayer byPlayer, int channelId, ref string message, ref string data, Vintagestory.API.Datastructures.BoolRef consumed)
         {
             string text = message;
-            if (text.Contains("god"))
+            if (text.Contains("god")||text.Contains("God")||text.Contains("GOD"))
             {
                 Thread genThread = new Thread(() => msg(byPlayer, text));
                 genThread.Start();
@@ -43,7 +43,7 @@ namespace AiGod
         {
             byte[] playerMoodByte = byPlayer.WorldData.GetModdata("mood");
             int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-            string aiMessage = GenAiPython(message, playerMood, SacrificeCheck(byPlayer));//need to add sacrifice check ,SacrificeCheck(byPlayer) after playerMood
+            string aiMessage = GenAiPython(message, playerMood, SacrificeCheck(byPlayer));
             if (aiMessage.Contains(":::"))
             {
                 commandInterpreter(byPlayer, aiMessage.Substring(aiMessage.IndexOf(":::")));
@@ -57,7 +57,7 @@ namespace AiGod
 
         private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
-            Console.WriteLine("Command Interpreter called with message: " + aiMessage);//Im switching this entire system to be a switch statement. It will hopefully work instead.
+            Console.WriteLine("Command Interpreter called with message: " + aiMessage);
             
             if (aiMessage.Contains("CBSK"))
             {
@@ -65,24 +65,20 @@ namespace AiGod
                 stack.SetFrom(byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack);
                 stack.StackSize = 1;
                 sapi.World.SpawnItemEntity(stack, byPlayer.Entity.Pos.XYZ.Add(0, 1, 0));
-                // duplicates whatever is held in hand (can be very risky, so be careful)  
             }
-            if (aiMessage.Contains("CAAA"))
+            if (aiMessage.Contains("CMMM["))
             {
-                byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
+                String cleanedAiMessage = aiMessage.Substring(aiMessage.IndexOf("CMMM["));
+                String moodCommand = aiMessage.Substring(aiMessage.IndexOf("CMMM["), cleanedAiMessage.IndexOf("]") + 1);
+                string moodToSetValue = Regex.Match(moodCommand, @"\d+").Value;
+                int moodToSetInt = Int32.Parse(moodToSetValue);
+                byte[] playerMoodByte = byPlayer.GetModdata("mood");
                 int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-                playerMood--;
+                playerMood = playerMood + moodToSetInt;
                 byte[] moodBytes = BitConverter.GetBytes(playerMood);
                 byPlayer.SetModdata("mood", moodBytes);
             }
-            if (aiMessage.Contains("CHHH"))
-            {
-                byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood up by one
-                int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-                playerMood++;
-                byte[] moodBytes = BitConverter.GetBytes(playerMood);
-                byPlayer.SetModdata("mood", moodBytes);
-            }
+            //merged mood statements
             if (aiMessage.Contains("CTSS"))
             {
                 //replace this with a thunderstorm ability
@@ -92,12 +88,12 @@ namespace AiGod
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
-            if (aiMessage.Contains("CTIS[")&& aiMessage.Contains("]CTIS"))//I see the problem, else if just stops past this point.
+            if (aiMessage.Contains("CTIS["))
             {//checks for a sacrifice in the player's inventory, if it exists, remove it, else, make god angry
                 IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
                 bool tookItem = false;
-
-                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS["), aiMessage.IndexOf("]CTIS")+1);
+                String cleanedAiMessage = aiMessage.Substring(aiMessage.IndexOf("CTIS["));
+                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS["), cleanedAiMessage.IndexOf("]")+1);
                 foreach (var item in hotbar)
                 {
                     if (!item.Empty && GrabCommand.Contains(item.GetStackName()))
