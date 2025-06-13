@@ -88,7 +88,7 @@ namespace AiGod
                 //replace this with a thunderstorm ability
             }
             if (aiMessage.Contains("CPTS"))
-            {//sets temporal stability to 0, preferably in the future, set player's temporal
+            {//sets temporal stability to 0
                 double value = 0.0;
                 ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", value);
             }
@@ -97,8 +97,7 @@ namespace AiGod
                 IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
                 bool tookItem = false;
 
-                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS["), aiMessage.IndexOf("]CTIS"));
-                Console.WriteLine(GrabCommand);
+                String GrabCommand = aiMessage.Substring(aiMessage.IndexOf("CTIS["), aiMessage.IndexOf("]CTIS")+1);
                 foreach (var item in hotbar)
                 {
                     if (!item.Empty && GrabCommand.Contains(item.GetStackName()))
@@ -107,7 +106,24 @@ namespace AiGod
                         string amountToTake = Regex.Match(GrabCommand, @"\d+").Value;
                         int amountToTakeInt = Int32.Parse(amountToTake);
                         int stackSize = item.Itemstack.StackSize;
-                        if (stackSize > amountToTakeInt)
+                        if (amountToTakeInt > stackSize)
+                        {
+                            Console.WriteLine("Negative Items Found!");
+                            byte[] playerMoodByte2 = byPlayer.GetModdata("mood");
+                            int playerMood2 = playerMoodByte2 != null ? BitConverter.ToInt32(playerMoodByte2, 0) : 0;
+                            playerMood2 -= 12;
+                            byte[] moodBytes2 = BitConverter.GetBytes(playerMood2);
+                            byPlayer.SetModdata("mood", moodBytes2);
+                            ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", 0.0);
+                            byPlayer.SendMessage(GlobalConstants.GeneralChatGroup,
+                                  $"Don't do that again.",
+                                  EnumChatType.CommandError);
+
+                            tookItem = true;
+                            item.Itemstack = null;
+                            item.MarkDirty();
+                        }
+                        else if (stackSize > amountToTakeInt)
                         {
                             Console.WriteLine("Taking " + item.GetStackName() + " and taking " + amountToTakeInt + " amount");
                             item.Itemstack.StackSize = stackSize - amountToTakeInt;
@@ -131,11 +147,15 @@ namespace AiGod
                 if (tookItem == false)
                 {
                     Console.WriteLine("No item found!");
-                    byte[] playerMoodByte = byPlayer.GetModdata("mood"); // set mood down by one
+                    byte[] playerMoodByte = byPlayer.GetModdata("mood");
                     int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-                    playerMood -= 5;
+                    playerMood -= 12;
                     byte[] moodBytes = BitConverter.GetBytes(playerMood);
                     byPlayer.SetModdata("mood", moodBytes);
+                    ((TreeAttribute)byPlayer.Entity.WatchedAttributes).SetDouble("temporalStability", 0.0);
+                    byPlayer.SendMessage(GlobalConstants.GeneralChatGroup,
+                          $"Don't do that again.",
+                          EnumChatType.CommandError);
                 }
             }
         }//Commands to add: smite,
