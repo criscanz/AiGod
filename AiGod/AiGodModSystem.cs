@@ -3,11 +3,14 @@ using Vintagestory.API.Config;
 namespace AiGod
 {
     using System.Diagnostics;
+    using System.Runtime.CompilerServices;
     using System.Text.RegularExpressions;
     using System.Threading;
     using Vintagestory.API.Common;
     using Vintagestory.API.Datastructures;
+    using Vintagestory.API.MathTools;
     using Vintagestory.API.Server;
+    using Vintagestory.GameContent;
 
     public class AiGodModSystem : ModSystem
     {
@@ -33,7 +36,7 @@ namespace AiGod
         private void Event_PlayerChat(IServerPlayer byPlayer, int channelId, ref string message, ref string data, Vintagestory.API.Datastructures.BoolRef consumed)
         {
             string text = message;
-            if (text.Contains("god")||text.Contains("God")||text.Contains("GOD"))
+            if (text.Contains("god") || text.Contains("God") || text.Contains("GOD"))
             {
                 Thread genThread = new Thread(() => msg(byPlayer, text));
                 genThread.Start();
@@ -58,7 +61,7 @@ namespace AiGod
         private void commandInterpreter(IServerPlayer byPlayer, string aiMessage)
         {
             Console.WriteLine("Command Interpreter called with message: " + aiMessage);
-            
+
             if (aiMessage.Contains("CBSK"))
             {
                 ItemStack stack = new ItemStack();
@@ -81,8 +84,10 @@ namespace AiGod
             //merged mood statements
             if (aiMessage.Contains("CTSS"))
             {
-                //replace this with a thunderstorm ability
-            }
+                Vec3d playerPos = byPlayer.Entity.ServerPos.Copy().XYZ;
+                WeatherSystemServer weatherSystem = sapi.ModLoader.GetModSystem<WeatherSystemServer>(true);
+                weatherSystem.SpawnLightningFlash(playerPos);
+            } 
             if (aiMessage.Contains("CPTS"))
             {//sets temporal stability to 0
                 double value = 0.0;
