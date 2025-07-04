@@ -159,7 +159,7 @@ namespace AiGod
                           EnumChatType.CommandError);
                 }
             }
-        }//Commands to add: smite,
+        }//Commands to add: Spoil Food ---------------------------------------------------------------------------
 
         private static String SacrificeCheck(IServerPlayer byPlayer)
         {
