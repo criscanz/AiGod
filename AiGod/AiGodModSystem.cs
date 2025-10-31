@@ -186,7 +186,7 @@ namespace AiGod
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
             string pythonScriptPath = "assets\\aigod\\genai_god.py";
             string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
-            string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
+            string api_key = "\"API_KEY\"";
             string sacrifices2 = "\"" + sacrifices + "\"";
             ProcessStartInfo start = new ProcessStartInfo
             {
