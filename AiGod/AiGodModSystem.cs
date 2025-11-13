@@ -202,7 +202,7 @@ namespace AiGod
             //IAsset myAsset = api.Assets.Get(new AssetLocation("aigod", "some/path/to/something.ext"));
             string pythonScriptPath = "C:\\Users\\chris\\Source\\Repos\\AiGod\\AiGod\\assets\\aigod\\genai.py";
             string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
-            string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
+            string api_key = "\"API_KEY\"";
             string sacrifices2 = "\"" + sacrifices + "\"";
             string history_file_name = "\"" + world_name + ".txt\"";
             ProcessStartInfo start = new ProcessStartInfo
