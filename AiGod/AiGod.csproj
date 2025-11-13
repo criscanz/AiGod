@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
   </PropertyGroup>
@@ -56,9 +56,6 @@
 </ItemGroup>
 
 <ItemGroup>
-  <None Update="assets\aigod\google_genai-1.15.0-py3-none-any.whl">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </None>
   <None Update="modicon.png">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
   </None>

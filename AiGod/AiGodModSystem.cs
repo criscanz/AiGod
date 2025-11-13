@@ -10,6 +10,8 @@ namespace AiGod
     using Vintagestory.API.Datastructures;
     using Vintagestory.API.MathTools;
     using Vintagestory.API.Server;
+    using Vintagestory.Client.NoObf;
+    using Vintagestory.Common;
     using Vintagestory.GameContent;
 
     public class AiGodModSystem : ModSystem
@@ -44,9 +46,10 @@ namespace AiGod
         }
         private void msg(IServerPlayer byPlayer, string message)
         {
-            byte[] playerMoodByte = byPlayer.WorldData.GetModdata("mood");
-            int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
-            string aiMessage = GenAiPython(message, playerMood, SacrificeCheck(byPlayer));
+            //byte[] playerMoodByte = byPlayer.WorldData.GetModdata("mood");
+            //int playerMood = playerMoodByte != null ? BitConverter.ToInt32(playerMoodByte, 0) : 0;
+            string file_name = sapi.World.WorldName+".txt";
+            string aiMessage = GenAiPython(message, file_name, SacrificeCheck(byPlayer));
             if (aiMessage.Contains(":::"))
             {
                 commandInterpreter(byPlayer, aiMessage.Substring(aiMessage.IndexOf(":::")));
@@ -159,6 +162,17 @@ namespace AiGod
                           EnumChatType.CommandError);
                 }
             }
+            if (aiMessage.Contains("CTSF"))
+            {
+                IInventory hotbar = byPlayer.InventoryManager.GetHotbarInventory();
+                foreach (var item in hotbar)
+                {
+                    if (!item.Empty)
+                    {
+                        Console.WriteLine(item.Itemstack.Attributes);
+                    }
+                }
+            }
         }//Commands to add: Spoil Food ---------------------------------------------------------------------------
 
         private static String SacrificeCheck(IServerPlayer byPlayer)
@@ -181,17 +195,20 @@ namespace AiGod
 
             return potentialSacrifices;
         }
-        private static String GenAiPython(string message, int mood, String sacrifices)
+        private static String GenAiPython(string message, string world_name, string sacrifices)
         {
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
-            string pythonScriptPath = "assets\\aigod\\genai_god.py";
+            //string pythonScriptPath = "assets\\aigod\\genai.py";
+            //IAsset myAsset = api.Assets.Get(new AssetLocation("aigod", "some/path/to/something.ext"));
+            string pythonScriptPath = "C:\\Users\\chris\\Source\\Repos\\AiGod\\AiGod\\assets\\aigod\\genai.py";
             string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
             string api_key = "\"AIzaSyBGeT9RGm3lSnH6ll8I4N_w97iJSW_FZGA\"";
             string sacrifices2 = "\"" + sacrifices + "\"";
+            string history_file_name = "\"" + world_name + ".txt\"";
             ProcessStartInfo start = new ProcessStartInfo
             {
                 FileName = "python", // or "python3" python works on windows, if it doesnt, try python3 or reinstall python
-                Arguments = $"\"{pythonScriptPath}\" {arguments} {api_key} {mood} {sacrifices2}",
+                Arguments = $"\"{pythonScriptPath}\" {arguments} {api_key} {history_file_name} {sacrifices2}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
