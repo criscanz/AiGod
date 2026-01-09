@@ -200,15 +200,15 @@ namespace AiGod
             /*string pythonScriptPath = Path.Combine(Environment.CurrentDirectory, "genai_god.py");*///INPORTANT - FIX THIS SHITTY WAY, RN YOU HAVE TO PUT THE PYTHON SCRIPT IN THE ROOT FOLDER OF THE SERVER, FIX THIS METHOD LATER, MAYBE MAKE IT A CONFIG OPTION OR SOMETHING
             //string pythonScriptPath = "assets\\aigod\\genai.py";
             //IAsset myAsset = api.Assets.Get(new AssetLocation("aigod", "some/path/to/something.ext"));
-            string pythonScriptPath = "C:\\Users\\chris\\Source\\Repos\\AiGod\\AiGod\\assets\\aigod\\genai.py";
-            string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
-            string api_key = "\"API_KEY\"";
+            string pythonScriptPath = "assets/aigod/config/genai.py";
+			string arguments = "\"" + message + "\""; // the message contents - RLY INPORTANT THAT IT HAS QUOTES, DONT REMOVE THEM
+            //string api_key = "\"\"";
             string sacrifices2 = "\"" + sacrifices + "\"";
             string history_file_name = "\"" + world_name + ".txt\"";
             ProcessStartInfo start = new ProcessStartInfo
             {
                 FileName = "python", // or "python3" python works on windows, if it doesnt, try python3 or reinstall python
-                Arguments = $"\"{pythonScriptPath}\" {arguments} {api_key} {history_file_name} {sacrifices2}",
+                Arguments = $"\"{pythonScriptPath}\" {arguments} {history_file_name} {sacrifices2}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
